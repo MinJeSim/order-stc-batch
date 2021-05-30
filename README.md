@@ -1,8 +1,9 @@
 # batch 프로그램
 
 실행방법
-1. BatchApplication 소스파일 내 # TEST # 부분 주석 해제 후 테스터 데이터를 args로 넘겨서 테스트 가능 
+1. BatchApplication 
    - main함수 run 시켜서 실행
+   
 2. intellij 내 Terminal 창에서 아래 명령어를 실행하여 jar packaging 하기 
    - mvnw install
      

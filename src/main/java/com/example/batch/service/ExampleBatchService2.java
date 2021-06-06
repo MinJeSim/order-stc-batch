@@ -2,6 +2,7 @@ package com.example.batch.service;
 
 import com.example.batch.common.CommonBatch;
 import com.example.batch.repository.PostsRepository;
+import com.example.batch.repository.StatisticsOrgRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,7 +15,7 @@ import java.util.Map;
 public class ExampleBatchService2 implements CommonBatch {
 
     @Autowired
-    PostsRepository postsRepository;
+    StatisticsOrgRepository repository;
 
     private  final String batchId = "BATCH0003";
     private int successCount = 0 ;
@@ -36,7 +37,10 @@ public class ExampleBatchService2 implements CommonBatch {
                 map.put("ID", args[1]);
             }
             /* Batch Logic */
-            postsRepository.getTest2();
+            repository.sts_org_delete();
+            successCount++;
+
+            repository.sts_smry_org_delete();
             successCount++;
         }catch (Exception e){
             log.error("ExampleBatchService::ERROR!!" + e.getMessage());

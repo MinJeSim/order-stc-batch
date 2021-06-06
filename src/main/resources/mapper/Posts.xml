@@ -1,34 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
+
 <mapper namespace="com.example.batch.repository.PostsRepository">
     <select id="getTest0" resultType="com.example.batch.entity.QueryResult">
-        SELECT * FROM ZORD_TMP WHERE SVC_NUM LIKE '0100%';
+        <![CDATA[
+        select ORG_ID, org_nm, org_abbr_nm
+        FROM ZNGM_ORG
+        ]]>
     </select>
-
-    <select id="getTest1" resultType="com.example.batch.entity.QueryResult">
-        SELECT * FROM ZORD_TMP WHERE SVC_NUM LIKE '0101%';
-    </select>
-
-    <select id="getTest2" resultType="com.example.batch.entity.QueryResult">
-        SELECT * FROM ZORD_TMP WHERE SVC_NUM LIKE '0102%';
-    </select>
-
-    <select id="getTest3" resultType="com.example.batch.entity.QueryResult">
-        SELECT * FROM ZORD_TMP WHERE SVC_NUM LIKE '0103%';
-    </select>
-
-    <select id="getTest4" resultType="com.example.batch.entity.QueryResult">
-        SELECT * FROM ZORD_TMP WHERE SVC_NUM LIKE '0104%';
-    </select>
-
-    <insert id="insertData" parameterType="com.example.batch.entity.QueryResult">
-        insert into ZORD_TMP
-            (svc_num, op_dt, test_data)
-        values
-        <if test="svc_num != null">
-            (#{svc_num}, #{op_dt}, #{test_data})
-        </if>
-    </insert>
-
 </mapper>

@@ -1,7 +1,7 @@
 package com.example.batch.service;
 
 import com.example.batch.common.CommonBatch;
-import com.example.batch.repository.PostsRepository;
+import com.example.batch.repository.StatisticsOrgRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,7 +14,7 @@ import java.util.Map;
 public class ExampleBatchService1 implements CommonBatch {
 
     @Autowired
-    PostsRepository postsRepository;
+    StatisticsOrgRepository repository;
 
     private  final String batchId = "BATCH0002";
     private int successCount = 0 ;
@@ -36,8 +36,33 @@ public class ExampleBatchService1 implements CommonBatch {
                 map.put("ID", args[1]);
             }
             /* Batch Logic */
-            postsRepository.getTest1();
+            repository.sts_insert_lvl_01();
             successCount++;
+
+            repository.sts_insert_lvl_01_01();
+            successCount++;
+
+            repository.sts_insert_lvl_02_02();
+            successCount++;
+
+            repository.sts_insert_lvl_03_01();
+            successCount++;
+
+            repository.sts_insert_lvl_03_02();
+            successCount++;
+
+            repository.sts_insert_lvl_0405();
+            successCount++;
+
+            repository.sts_insert_lvl_06();
+            successCount++;
+
+            repository.sts_insert_lvl_etc();
+            successCount++;
+
+            repository.smry_sts_insert();
+            successCount++;
+
         }catch (Exception e){
             log.error("ExampleBatchService::ERROR!!" + e.getMessage());
             failCount++;

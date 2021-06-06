@@ -21,13 +21,13 @@ public class QueryResult {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String svc_num;
-    private String op_dt;
-    private String test_data;
+    private String ORG_ID;
+    private String ORG_NM;
+    private String ORG_ABBR_NM;
 
-    public QueryResult(String svc_num, String op_dt, String test_data) {
-        this.svc_num = svc_num;
-        this.op_dt = op_dt;
-        this.test_data = test_data;
+    public QueryResult(String ORG_ID, String ORG_NM, String ORG_ABBR_NM) {
+        this.ORG_ID = ORG_ID;
+        this.ORG_NM = ORG_NM;
+        this.ORG_ABBR_NM = ORG_ABBR_NM;
     }
 }

@@ -1,0 +1,931 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.batch.repository.StatisticsOrgRepository">
+    <delete id="sts_org_delete">
+        <![CDATA[
+          delete /*+ parallel(a, 4)*/
+          FROM zord_stc_org a
+          where audit_id = 'batch-java'
+        ]]>
+    </delete>
+
+    <delete id="sts_smry_org_delete">
+        <![CDATA[
+        delete /*+ parallel(a, 4)*/
+        FROM zord_smry_stc_org_tmp a
+        where audit_id = 'batch-java'
+        ]]>
+    </delete>
+
+    <insert id="sts_insert_lvl_01">
+        <![CDATA[
+            insert into zord_stc_org
+            (
+               org_id
+             , org_lvl
+             , org_nm
+             , org_abbr_nm
+             , org_cd
+             , sub_org_cd
+             , sup_org_id
+             , sup_org_cd
+             , sup_sub_org_cd
+             , sup_org_nm
+             , org_cl_cd
+             , mkt_div_org_id
+             , org_typ_cd
+             , warea_cd
+             , area_cd
+             , aply_sta_dt
+             , aply_end_dt
+             , virtual_org_typ_cd
+             , ss_gr_cd
+             , as_cntr_typ_cd
+             , del_yn
+             , actvn_yn
+             , ser_num
+             , audit_id
+             , audit_dtm
+             , co_cl_cd
+             , ref_org_id
+            )
+            select zo.org_id
+                  ,case when zo.org_id = 'A000000000' then 1 else 0 end org_lvl
+                  ,zo.org_nm
+                  ,zo.org_abbr_nm
+                  ,zo.org_cd
+                  ,zo.sub_org_cd
+                  ,case when zo.org_id = 'A000000000' then 'A00000' else zo.sup_org_id end sup_org_id
+                  ,zo.sup_org_cd
+                  ,zo.sup_sub_org_cd
+                  ,zo.sup_org_nm
+                  ,zo.org_cl_cd
+                  ,case when zo.org_id <> 'A000000000' then 'A000000000' else zo.org_id end mkt_div_org_id
+                  ,zo.org_typ_cd
+                  ,zo.warea_cd
+                  ,zo.area_cd
+                  ,zo.aply_sta_dt
+                  ,zo.aply_end_dt
+                  ,zo.virtual_org_typ_cd
+                  ,null
+                  ,zo.as_cntr_typ_cd
+                  ,zo.del_yn
+                  ,zo.actvn_yn
+                  ,zord_stc_org_s.NEXTVAL
+                  ,'batch-java'
+                  ,sysdate
+                  ,zo.co_cl_cd
+                  ,zo.ref_org_id
+              from zngm_org zo
+                  ,zngm_comm_cd_dtl zccd
+             where zo.org_typ_cd in ('100','110','120','130','140')
+               and zo.co_cl_cd = 'T'
+               and zccd.comm_cd_id(+) = 'ZSTS_P_SKT_ORG120'
+               and zo.org_id = zccd.comm_cd_val(+)
+               and zccd.eff_end_dt(+) > to_char(sysdate,'YYYYMMDD')
+               and zccd.comm_cd_val is null
+        ]]>
+    </insert>
+
+    <insert id="sts_insert_lvl_01_01">
+        <![CDATA[
+        insert into zord_stc_org
+        (
+            org_id
+        , org_lvl
+        , org_nm
+        , org_abbr_nm
+        , org_cd
+        , sub_org_cd
+        , sup_org_id
+        , sup_org_cd
+        , sup_sub_org_cd
+        , sup_org_nm
+        , org_cl_cd
+        , mkt_div_org_id
+        , org_typ_cd
+        , warea_cd
+        , area_cd
+        , aply_sta_dt
+        , aply_end_dt
+        , virtual_org_typ_cd
+        , ss_gr_cd
+        , as_cntr_typ_cd
+        , del_yn
+        , actvn_yn
+        , ser_num
+        , audit_id
+        , audit_dtm
+        , co_cl_cd
+        , ref_org_id
+        )
+        select zo.org_id
+             ,'2'
+             ,zo.org_nm
+             ,zo.org_abbr_nm
+             ,zo.org_cd
+             ,zo.sub_org_cd
+             ,'A000000000'
+             ,'A00000'
+             ,'0000'
+             ,'SK텔레콤'
+             ,zo.org_cl_cd
+             ,zo.org_id mkt_div_org_id
+             ,'210'
+             ,zo.warea_cd
+             ,zo.area_cd
+             ,zo.aply_sta_dt
+             ,zo.aply_end_dt
+             ,zo.virtual_org_typ_cd
+             ,null
+             ,zo.as_cntr_typ_cd
+             ,zo.del_yn
+             ,zo.actvn_yn
+             ,zord_stc_org_s.NEXTVAL
+             ,'batch-java'
+             ,sysdate
+             ,zo.co_cl_cd
+             ,zo.ref_org_id
+        from zngm_org zo
+           ,zngm_comm_cd_dtl zccd
+        where 1=1
+          and zccd.comm_cd_id = 'ZSTS_P_SKT_ORG120'
+          and zo.org_id = zccd.comm_cd_val
+          and zccd.eff_end_dt(+) > to_char(sysdate,'YYYYMMDD')
+          and zccd.comm_cd_val is not null
+        ]]>
+    </insert>
+
+    <insert id="sts_insert_lvl_02_02">
+        <![CDATA[
+        insert into zord_stc_org
+        (
+            org_id
+        , org_lvl
+        , org_nm
+        , org_abbr_nm
+        , org_cd
+        , sub_org_cd
+        , sup_org_id
+        , sup_org_cd
+        , sup_sub_org_cd
+        , sup_org_nm
+        , org_cl_cd
+        , mkt_div_org_id
+        , org_typ_cd
+        , warea_cd
+        , area_cd
+        , aply_sta_dt
+        , aply_end_dt
+        , virtual_org_typ_cd
+        , ss_gr_cd
+        , as_cntr_typ_cd
+        , del_yn
+        , actvn_yn
+        , ser_num
+        , audit_id
+        , audit_dtm
+        , co_cl_cd
+        , ref_org_id
+        )
+        select zo.org_id
+             ,case when zo.org_id in ('B111090000', 'B211320000', 'B311320000', 'B411550000', 'B611680000',
+                                      'A030360000', 'A033680000', '1000102171', '1000127503', 'A009010000',
+                                      'A009030000', 'A009040000', 'B099910000', 'A009080000', 'A009090000',
+                                      'V990140000', 'V990420000', 'V990550000', 'V990740000', 'V990770000',
+                                      'B099000000', 'V990430000', '1000238224', 'B136690000', 'B199690000'
+                                     ) then 2
+                   when zo.org_typ_cd in ('200') and zo.warea_cd = '0' then 2
+                   else 0
+              end org_lvl
+             ,zo.org_nm
+             ,zo.org_abbr_nm
+             ,zo.org_cd
+             ,zo.sub_org_cd
+             ,'A000000000' sup_org_id
+             ,'A00000' sup_org_cd
+             ,'0000' sup_sub_org_cd
+             ,zol.org_nm sup_org_nm
+             ,zo.org_cl_cd
+             ,case when zo.org_typ_cd in ('210','450', '470') and zo.org_id not in ('A009010000', 'A009030000', 'A009040000', 'A009080000', 'A009090000',
+                                                                                    'V990140000', 'V990420000', 'V990550000', 'V990430000', 'V990770000')
+                   then 'A000000000'
+                   when zo.org_id in ('1000238225') then '1000238224'
+                   else zo.org_id
+               end mkt_div_org_id
+             ,zo.org_typ_cd
+             ,zo.warea_cd
+             ,zo.area_cd
+             ,zo.aply_sta_dt
+             ,zo.aply_end_dt
+             ,zo.virtual_org_typ_cd
+             ,null
+             ,zo.as_cntr_typ_cd
+             ,zo.del_yn
+             ,zo.actvn_yn
+             ,zord_stc_org_s.NEXTVAL
+             ,'batch-java'
+             ,sysdate
+             ,zo.co_cl_cd
+             ,zo.ref_org_id
+        from zngm_org zo
+            ,zngm_org zol
+            ,zngm_comm_cd_dtl zccd
+        where zo.org_typ_cd in ('200','201','210','220','221','450','470')
+          and zol.org_id = 'A000000000'
+          and 1 = case when zo.org_id in ( 'A109050000', 'A209050000', 'A309050000', 'A409050000', 'A609050000',
+                                           'B100800000', 'B109000000', 'B200800000', 'B209000000', 'B309000000',
+                                           'B400800000', 'B409000000', 'B509000000', 'B600800000', 'B609000000',
+                                           'B709000000', 'B909000000', 'C110900000', 'C110910000', 'C110940000',
+                                           'C110950000', 'C210900000', 'C310900000', 'C410900000', 'C610900000',
+                                           'V990390000', 'V990400000', 'V990410000', 'Z000250000', 'Z000260000',
+                                           'Z000270000', 'Z000280000', 'Z000320000', 'Z000330000', 'Z000340000',
+                                           'Z000380000', 'Z000390000', 'Z000400000', 'Z000410000', 'Z000440000',
+                                           'Z000450000', 'Z000460000', 'Z000480000', 'Z000500000', 'Z000510000',
+                                           'Z000520000', 'Z000530000', 'Z000560000', 'Z000570000', 'Z000580000',
+                                           'Z000600000', 'Z000610000', 'Z000620000', 'Z000640000', 'Z000650000',
+                                           'Z000660000', 'Z000670000', 'Z000690000', 'Z000700000', 'Z000710000',
+                                           'Z000720000', 'V992200000', 'V992240000'
+                                         ) then 0
+                       else 1
+                   end
+          and zo.co_cl_cd = 'T'
+          and zccd.comm_cd_id(+) = 'ZSTS_P_SKT_ORG120'
+          and zo.org_id = zccd.comm_cd_val(+)
+          and zccd.eff_end_dt(+) > to_char(sysdate,'YYYYMMDD')
+          and zccd.comm_cd_val is null
+        ]]>
+    </insert>
+
+    <insert id="sts_insert_lvl_03_01">
+        <![CDATA[
+        insert into zord_stc_org
+        (
+            org_id
+        , org_lvl
+        , org_nm
+        , org_abbr_nm
+        , org_cd
+        , sub_org_cd
+        , sup_org_id
+        , sup_org_cd
+        , sup_sub_org_cd
+        , sup_org_nm
+        , org_cl_cd
+        , org_typ_cd
+        , warea_cd
+        , area_cd
+        , aply_sta_dt
+        , aply_end_dt
+        , virtual_org_typ_cd
+        , ss_gr_cd
+        , as_cntr_typ_cd
+        , del_yn
+        , actvn_yn
+        , ser_num
+        , audit_id
+        , audit_dtm
+        , co_cl_cd
+        , ref_org_id
+        )
+        select zo.org_id
+             , 3
+             ,zo.org_nm
+             ,zo.org_abbr_nm
+             ,zo.org_cd
+             ,zo.sub_org_cd
+             ,(case when zo.org_id = '1000089953' then 'B099910000'
+                    when zo.mkt_div_org_id = 'A016990000' then zo.mkt_div_org_id
+                    when zo.org_typ_cd = '310' and zo.area_cd = '1' then 'B111090000'
+                    when zo.org_typ_cd = '310' and zo.area_cd = '2' then 'B211320000'
+                    when zo.org_typ_cd = '310' and zo.area_cd = '3' then 'B311320000'
+                    when zo.org_typ_cd = '310' and zo.area_cd = '4' then 'B411550000'
+                    when zo.org_typ_cd = '310' and zo.area_cd = '5' then 'B411550000'
+                    when zo.org_typ_cd = '310' and zo.area_cd = '9' then 'B411550000'
+                    when zo.org_typ_cd = '310' and zo.area_cd = '6' then 'B611680000'
+                    when zo.org_typ_cd = '310' and zo.area_cd = '7' then 'B611680000'
+                    when zo.org_typ_cd = '310' and zo.area_cd = '8' then 'B611680000'
+
+                    when zo.org_typ_cd = '320' and zo.warea_cd = '1' then 'B111090000'
+                    when zo.org_typ_cd = '320' and zo.warea_cd = '2' and zo.area_cd = '2' then 'B211320000'
+                    when zo.org_typ_cd = '320' and zo.warea_cd = '2' and zo.area_cd = '3' then 'B311320000'
+                    when zo.org_typ_cd = '320' and zo.warea_cd = '4' then 'B411550000'
+                    when zo.org_typ_cd = '320' and zo.warea_cd = '6' then 'B611680000'
+
+                    when zo.org_typ_cd = '330' and zo.warea_cd = '1' then 'B111090000'
+                    when zo.org_typ_cd = '330' and zo.warea_cd = '2' and zo.area_cd = '2' then 'B211320000'
+                    when zo.org_typ_cd = '330' and zo.warea_cd = '2' and zo.area_cd = '3' then 'B311320000'
+                    when zo.org_typ_cd = '330' and zo.warea_cd = '4' then 'B411550000'
+                    when zo.org_typ_cd = '330' and zo.warea_cd = '6' then 'B611680000'
+
+                    when zo.org_typ_cd = '340' and zo.warea_cd = '1' then 'B111090000'
+                    when zo.org_typ_cd = '340' and zo.warea_cd = '2' and zo.area_cd = '2' then 'B211320000'
+                    when zo.org_typ_cd = '340' and zo.warea_cd = '2' and zo.area_cd = '3' then 'B311320000'
+                    when zo.org_typ_cd = '340' and zo.warea_cd = '4' then 'B411550000'
+                    when zo.org_typ_cd = '340' and zo.warea_cd = '6' then 'B611680000'
+
+                    when zo.org_typ_cd = '351' and zo.area_cd = '1' then 'B111090000'
+                    when zo.org_typ_cd = '351' and zo.area_cd = '2' then 'B211320000'
+                    when zo.org_typ_cd = '351' and zo.area_cd = '3' then 'B311320000'
+                    when zo.org_typ_cd = '351' and zo.area_cd = '4' then 'B411550000'
+                    when zo.org_typ_cd = '351' and zo.area_cd = '5' then 'B411550000'
+                    when zo.org_typ_cd = '351' and zo.area_cd = '9' then 'B411550000'
+                    when zo.org_typ_cd = '351' and zo.area_cd = '6' then 'B611680000'
+                    when zo.org_typ_cd = '351' and zo.area_cd = '7' then 'B611680000'
+                    when zo.org_typ_cd = '351' and zo.area_cd = '8' then 'B611680000'
+
+                    when zo.org_typ_cd = '352' and zo.area_cd = '1' then 'B111090000'
+                    when zo.org_typ_cd = '352' and zo.area_cd = '2' then 'B211320000'
+                    when zo.org_typ_cd = '352' and zo.area_cd = '3' then 'B311320000'
+                    when zo.org_typ_cd = '352' and zo.area_cd = '4' then 'B411550000'
+                    when zo.org_typ_cd = '352' and zo.area_cd = '5' then 'B411550000'
+                    when zo.org_typ_cd = '352' and zo.area_cd = '9' then 'B411550000'
+                    when zo.org_typ_cd = '352' and zo.area_cd = '6' then 'B611680000'
+                    when zo.org_typ_cd = '352' and zo.area_cd = '7' then 'B611680000'
+                    when zo.org_typ_cd = '352' and zo.area_cd = '8' then 'B611680000'
+
+                    when zo.org_typ_cd = '400' and zo.area_cd = '1' then 'B111090000'
+                    when zo.org_typ_cd = '400' and zo.area_cd = '2' then 'B211320000'
+                    when zo.org_typ_cd = '400' and zo.area_cd = '3' then 'B311320000'
+                    when zo.org_typ_cd = '400' and zo.area_cd = '4' then 'B411550000'
+                    when zo.org_typ_cd = '400' and zo.area_cd = '5' then 'B411550000'
+                    when zo.org_typ_cd = '400' and zo.area_cd = '9' then 'B411550000'
+                    when zo.org_typ_cd = '400' and zo.area_cd = '6' then 'B611680000'
+                    when zo.org_typ_cd = '400' and zo.area_cd = '7' then 'B611680000'
+                    when zo.org_typ_cd = '400' and zo.area_cd = '8' then 'B611680000'
+
+                    when zo.org_typ_cd = '410' and zo.warea_cd = '1' then 'B111090000'
+                    when zo.org_typ_cd = '410' and zo.warea_cd = '2' and zo.area_cd = '2' then 'B211320000'
+                    when zo.org_typ_cd = '410' and zo.warea_cd = '2' and zo.area_cd = '3' then 'B311320000'
+                    when zo.org_typ_cd = '410' and zo.warea_cd = '4' then 'B411550000'
+                    when zo.org_typ_cd = '410' and zo.warea_cd = '6' then 'B611680000'
+                    else zo.sup_org_id
+                end
+              ) as sup_org_id
+             ,(case when zo.org_id = '1000089953' then 'B09991'
+                    when zo.mkt_div_org_id = 'A016990000' then zo.mkt_div_org_cd
+                    when zo.org_typ_cd = '310' and zo.area_cd = '1' then 'B11109'
+                    when zo.org_typ_cd = '310' and zo.area_cd = '2' then 'B21132'
+                    when zo.org_typ_cd = '310' and zo.area_cd = '3' then 'B31132'
+                    when zo.org_typ_cd = '310' and zo.area_cd = '4' then 'B41155'
+                    when zo.org_typ_cd = '310' and zo.area_cd = '5' then 'B41155'
+                    when zo.org_typ_cd = '310' and zo.area_cd = '9' then 'B41155'
+                    when zo.org_typ_cd = '310' and zo.area_cd = '6' then 'B61168'
+                    when zo.org_typ_cd = '310' and zo.area_cd = '7' then 'B61168'
+                    when zo.org_typ_cd = '310' and zo.area_cd = '8' then 'B61168'
+
+                    when zo.org_typ_cd = '320' and zo.warea_cd = '1' then 'B11109'
+                    when zo.org_typ_cd = '320' and zo.warea_cd = '2' and zo.area_cd = '2' then 'B21132'
+                    when zo.org_typ_cd = '320' and zo.warea_cd = '2' and zo.area_cd = '3' then 'B31132'
+                    when zo.org_typ_cd = '320' and zo.warea_cd = '4' then 'B41155'
+                    when zo.org_typ_cd = '320' and zo.warea_cd = '6' then 'B61168'
+
+                    when zo.org_typ_cd = '330' and zo.warea_cd = '1' then 'B11109'
+                    when zo.org_typ_cd = '330' and zo.warea_cd = '2' and zo.area_cd = '2' then 'B21132'
+                    when zo.org_typ_cd = '330' and zo.warea_cd = '2' and zo.area_cd = '3' then 'B31132'
+                    when zo.org_typ_cd = '330' and zo.warea_cd = '4' then 'B41155'
+                    when zo.org_typ_cd = '330' and zo.warea_cd = '6' then 'B61168'
+
+                    when zo.org_typ_cd = '340' and zo.warea_cd = '1' then 'B11109'
+                    when zo.org_typ_cd = '340' and zo.warea_cd = '2' and zo.area_cd = '2' then 'B21132'
+                    when zo.org_typ_cd = '340' and zo.warea_cd = '2' and zo.area_cd = '3' then 'B31132'
+                    when zo.org_typ_cd = '340' and zo.warea_cd = '4' then 'B41155'
+                    when zo.org_typ_cd = '340' and zo.warea_cd = '6' then 'B61168'
+
+                    when zo.org_typ_cd = '351' and zo.area_cd = '1' then 'B11109'
+                    when zo.org_typ_cd = '351' and zo.area_cd = '2' then 'B21132'
+                    when zo.org_typ_cd = '351' and zo.area_cd = '3' then 'B31132'
+                    when zo.org_typ_cd = '351' and zo.area_cd = '4' then 'B41155'
+                    when zo.org_typ_cd = '351' and zo.area_cd = '5' then 'B41155'
+                    when zo.org_typ_cd = '351' and zo.area_cd = '9' then 'B41155'
+                    when zo.org_typ_cd = '351' and zo.area_cd = '6' then 'B61168'
+                    when zo.org_typ_cd = '351' and zo.area_cd = '7' then 'B61168'
+                    when zo.org_typ_cd = '351' and zo.area_cd = '8' then 'B61168'
+
+                    when zo.org_typ_cd = '352' and zo.area_cd = '1' then 'B11109'
+                    when zo.org_typ_cd = '352' and zo.area_cd = '2' then 'B21132'
+                    when zo.org_typ_cd = '352' and zo.area_cd = '3' then 'B31132'
+                    when zo.org_typ_cd = '352' and zo.area_cd = '4' then 'B41155'
+                    when zo.org_typ_cd = '352' and zo.area_cd = '5' then 'B41155'
+                    when zo.org_typ_cd = '352' and zo.area_cd = '9' then 'B41155'
+                    when zo.org_typ_cd = '352' and zo.area_cd = '6' then 'B61168'
+                    when zo.org_typ_cd = '352' and zo.area_cd = '7' then 'B61168'
+                    when zo.org_typ_cd = '352' and zo.area_cd = '8' then 'B61168'
+
+                    when zo.org_typ_cd = '400' and zo.area_cd = '1' then 'B11109'
+                    when zo.org_typ_cd = '400' and zo.area_cd = '2' then 'B21132'
+                    when zo.org_typ_cd = '400' and zo.area_cd = '3' then 'B31132'
+                    when zo.org_typ_cd = '400' and zo.area_cd = '4' then 'B41155'
+                    when zo.org_typ_cd = '400' and zo.area_cd = '5' then 'B41155'
+                    when zo.org_typ_cd = '400' and zo.area_cd = '9' then 'B41155'
+                    when zo.org_typ_cd = '400' and zo.area_cd = '6' then 'B61168'
+                    when zo.org_typ_cd = '400' and zo.area_cd = '7' then 'B61168'
+                    when zo.org_typ_cd = '400' and zo.area_cd = '8' then 'B61168'
+
+                    when zo.org_typ_cd = '410' and zo.warea_cd = '1' then 'B11109'
+                    when zo.org_typ_cd = '410' and zo.warea_cd = '2' and zo.area_cd = '2' then 'B21132'
+                    when zo.org_typ_cd = '410' and zo.warea_cd = '2' and zo.area_cd = '3' then 'B31132'
+                    when zo.org_typ_cd = '410' and zo.warea_cd = '4' then 'B41155'
+                    when zo.org_typ_cd = '410' and zo.warea_cd = '6' then 'B61168'
+                    else zo.sup_org_cd
+                end
+              ) as sup_org_cd
+             ,'0000' sup_sub_org_cd
+             ,( case when zo.org_id = '1000089953' then 'CV추진실(가상)'
+                     when zo.mkt_div_org_id = 'A016990000' then zo.mkt_div_org_nm
+                     when zo.org_typ_cd = '310' and zo.area_cd = '1' then '수도권마케팅본부'
+                     when zo.org_typ_cd = '310' and zo.area_cd = '2' then '부산마케팅본부'
+                     when zo.org_typ_cd = '310' and zo.area_cd = '3' then '대구마케팅본부'
+                     when zo.org_typ_cd = '310' and zo.area_cd = '4' then '서부마케팅본부'
+                     when zo.org_typ_cd = '310' and zo.area_cd = '5' then '서부마케팅본부'
+                     when zo.org_typ_cd = '310' and zo.area_cd = '9' then '서부마케팅본부'
+                     when zo.org_typ_cd = '310' and zo.area_cd = '6' then '중부마케팅본부'
+                     when zo.org_typ_cd = '310' and zo.area_cd = '7' then '중부마케팅본부'
+                     when zo.org_typ_cd = '310' and zo.area_cd = '8' then '중부마케팅본부'
+
+                     when zo.org_typ_cd = '320' and zo.warea_cd = '1' then '수도권마케팅본부'
+                     when zo.org_typ_cd = '320' and zo.warea_cd = '2' and zo.area_cd = '2' then '부산마케팅본부'
+                     when zo.org_typ_cd = '320' and zo.warea_cd = '2' and zo.area_cd = '3' then '대구마케팅본부'
+                     when zo.org_typ_cd = '320' and zo.warea_cd = '4' then '서부마케팅본부'
+                     when zo.org_typ_cd = '320' and zo.warea_cd = '6' then '중부마케팅본부'
+
+                     when zo.org_typ_cd = '330' and zo.warea_cd = '1' then '수도권마케팅본부'
+                     when zo.org_typ_cd = '330' and zo.warea_cd = '2' and zo.area_cd = '2' then '부산마케팅본부'
+                     when zo.org_typ_cd = '330' and zo.warea_cd = '2' and zo.area_cd = '3' then '대구마케팅본부'
+                     when zo.org_typ_cd = '330' and zo.warea_cd = '4' then '서부마케팅본부'
+                     when zo.org_typ_cd = '330' and zo.warea_cd = '6' then '중부마케팅본부'
+
+                     when zo.org_typ_cd = '340' and zo.warea_cd = '1' then '수도권마케팅본부'
+                     when zo.org_typ_cd = '340' and zo.warea_cd = '2' and zo.area_cd = '2' then '부산마케팅본부'
+                     when zo.org_typ_cd = '340' and zo.warea_cd = '2' and zo.area_cd = '3' then '대구마케팅본부'
+                     when zo.org_typ_cd = '340' and zo.warea_cd = '4' then '서부마케팅본부'
+                     when zo.org_typ_cd = '340' and zo.warea_cd = '6' then '중부마케팅본부'
+
+                     when zo.org_typ_cd = '351' and zo.area_cd = '1' then '수도권마케팅본부'
+                     when zo.org_typ_cd = '351' and zo.area_cd = '2' then '부산마케팅본부'
+                     when zo.org_typ_cd = '351' and zo.area_cd = '3' then '대구마케팅본부'
+                     when zo.org_typ_cd = '351' and zo.area_cd = '4' then '서부마케팅본부'
+                     when zo.org_typ_cd = '351' and zo.area_cd = '5' then '서부마케팅본부'
+                     when zo.org_typ_cd = '351' and zo.area_cd = '9' then '서부마케팅본부'
+                     when zo.org_typ_cd = '351' and zo.area_cd = '6' then '중부마케팅본부'
+                     when zo.org_typ_cd = '351' and zo.area_cd = '7' then '중부마케팅본부'
+                     when zo.org_typ_cd = '351' and zo.area_cd = '8' then '중부마케팅본부'
+
+                     when zo.org_typ_cd = '352' and zo.area_cd = '1' then '수도권마케팅본부'
+                     when zo.org_typ_cd = '352' and zo.area_cd = '2' then '부산마케팅본부'
+                     when zo.org_typ_cd = '352' and zo.area_cd = '3' then '대구마케팅본부'
+                     when zo.org_typ_cd = '352' and zo.area_cd = '4' then '서부마케팅본부'
+                     when zo.org_typ_cd = '352' and zo.area_cd = '5' then '서부마케팅본부'
+                     when zo.org_typ_cd = '352' and zo.area_cd = '9' then '서부마케팅본부'
+                     when zo.org_typ_cd = '352' and zo.area_cd = '6' then '중부마케팅본부'
+                     when zo.org_typ_cd = '352' and zo.area_cd = '7' then '중부마케팅본부'
+                     when zo.org_typ_cd = '352' and zo.area_cd = '8' then '중부마케팅본부'
+
+                     when zo.org_typ_cd = '400' and zo.area_cd = '1' then '수도권마케팅본부'
+                     when zo.org_typ_cd = '400' and zo.area_cd = '2' then '부산마케팅본부'
+                     when zo.org_typ_cd = '400' and zo.area_cd = '3' then '대구마케팅본부'
+                     when zo.org_typ_cd = '400' and zo.area_cd = '4' then '서부마케팅본부'
+                     when zo.org_typ_cd = '400' and zo.area_cd = '5' then '서부마케팅본부'
+                     when zo.org_typ_cd = '400' and zo.area_cd = '9' then '서부마케팅본부'
+                     when zo.org_typ_cd = '400' and zo.area_cd = '6' then '중부마케팅본부'
+                     when zo.org_typ_cd = '400' and zo.area_cd = '7' then '중부마케팅본부'
+                     when zo.org_typ_cd = '400' and zo.area_cd = '8' then '중부마케팅본부'
+
+                     when zo.org_typ_cd = '410' and zo.warea_cd = '1' then '수도권마케팅본부'
+                     when zo.org_typ_cd = '410' and zo.warea_cd = '2' and zo.area_cd = '2' then '부산마케팅본부'
+                     when zo.org_typ_cd = '410' and zo.warea_cd = '2' and zo.area_cd = '3' then '대구마케팅본부'
+                     when zo.org_typ_cd = '410' and zo.warea_cd = '4' then '서부마케팅본부'
+                     when zo.org_typ_cd = '410' and zo.warea_cd = '6' then '중부마케팅본부'
+                     else zo.sup_org_nm
+               end
+              ) as sup_org_nm
+             ,zo.org_cl_cd
+             ,zo.org_typ_cd
+             ,case when zo.mkt_div_org_id = 'A016990000' then '0'
+                   else zo.warea_cd
+              end warea_cd
+             ,case when zo.mkt_div_org_id = 'A016990000' then '0'
+                   else zo.area_cd
+              end area_cd
+             ,zo.aply_sta_dt
+             ,zo.aply_end_dt
+             ,zo.virtual_org_typ_cd
+             ,null
+             ,zo.as_cntr_typ_cd
+             ,zo.del_yn
+             ,zo.actvn_yn
+             ,zord_stc_org_s.NEXTVAL
+             ,'batch-java'
+             ,sysdate
+             ,zo.co_cl_cd
+             ,zo.ref_org_id
+        from zngm_org zo
+        where zo.org_typ_cd in ('300','310','320','330','340','351','352','400','410','461')
+          and zo.co_cl_cd = 'T'
+        ]]>
+    </insert>
+
+    <insert id="sts_insert_lvl_03_02">
+        <![CDATA[
+        insert into zord_stc_org
+        (
+            org_id
+        , org_lvl
+        , org_nm
+        , org_abbr_nm
+        , org_cd
+        , sub_org_cd
+        , sup_org_id
+        , sup_org_cd
+        , sup_sub_org_cd
+        , sup_org_nm
+        , org_cl_cd
+        , org_typ_cd
+        , warea_cd
+        , area_cd
+        , aply_sta_dt
+        , aply_end_dt
+        , virtual_org_typ_cd
+        , ss_gr_cd
+        , as_cntr_typ_cd
+        , del_yn
+        , actvn_yn
+        , ser_num
+        , audit_id
+        , audit_dtm
+        , co_cl_cd
+        , ref_org_id
+        )
+        select zo.org_id
+             , 3
+             ,zo.org_nm
+             ,zo.org_abbr_nm
+             ,zo.org_cd
+             ,zo.sub_org_cd
+             ,(case
+                    when zo.org_typ_cd = '210' and zo.area_cd = '1' then 'B111090000'
+                    when zo.org_typ_cd = '210' and zo.area_cd = '2' then 'B211320000'
+                    when zo.org_typ_cd = '210' and zo.area_cd = '3' then 'B311320000'
+                    when zo.org_typ_cd = '210' and zo.area_cd = '4' then 'B411550000'
+                    when zo.org_typ_cd = '210' and zo.area_cd = '5' then 'B411550000'
+                    when zo.org_typ_cd = '210' and zo.area_cd = '9' then 'B411550000'
+                    when zo.org_typ_cd = '210' and zo.area_cd = '6' then 'B611680000'
+                    when zo.org_typ_cd = '210' and zo.area_cd = '7' then 'B611680000'
+                    when zo.org_typ_cd = '210' and zo.area_cd = '8' then 'B611680000'
+                    when zo.org_id = 'C110900000' then 'A030360000'
+                    when zo.org_id = 'C110910000' then 'A030360000'
+                    when zo.org_id = 'C110950000' then 'A030360000'
+                    when zo.org_id = 'C110940000' then 'B111090000'
+                    when zo.org_id = 'C210900000' then 'B211320000'
+                    when zo.org_id = 'C310900000' then 'B311320000'
+                    when zo.org_id = 'C410900000' then 'B411550000'
+                    when zo.org_id = 'C610900000' then 'B611680000'
+                    when zo.org_id = 'A109050000' then 'B111090000'
+                    when zo.org_id = 'A209050000' then 'B211320000'
+                    when zo.org_id = 'A309050000' then 'B311320000'
+                    when zo.org_id = 'A409050000' then 'B411550000'
+                    when zo.org_id = 'A609050000' then 'B611680000'
+                    when zo.org_id = 'Z000530000' then 'B611680000'
+                    when zo.org_id = 'Z000280000' then 'B211320000'
+                    when zo.org_id = 'Z000410000' then 'B411550000'
+                    when zo.org_id = 'Z000480000' then 'B411550000'
+                    when zo.org_id = 'Z000640000' then 'B611680000'
+                    when zo.org_id = 'Z000690000' then 'B611680000'
+                    when zo.org_id = 'B100800000' then 'B111090000'
+                    when zo.org_id = 'B200800000' then 'B211320000'
+                    when zo.org_id = 'B400800000' then 'B411550000'
+                    when zo.org_id = 'B600800000' then 'B611680000'
+                    else zo.sup_org_id
+              end
+            ) as sup_org_id
+             ,(case
+                   when zo.org_typ_cd = '210' and zo.area_cd = '1' then 'B11109'
+                   when zo.org_typ_cd = '210' and zo.area_cd = '2' then 'B21132'
+                   when zo.org_typ_cd = '210' and zo.area_cd = '3' then 'B31132'
+                   when zo.org_typ_cd = '210' and zo.area_cd = '4' then 'B41155'
+                   when zo.org_typ_cd = '210' and zo.area_cd = '5' then 'B41155'
+                   when zo.org_typ_cd = '210' and zo.area_cd = '9' then 'B41155'
+                   when zo.org_typ_cd = '210' and zo.area_cd = '6' then 'B61168'
+                   when zo.org_typ_cd = '210' and zo.area_cd = '7' then 'B61168'
+                   when zo.org_typ_cd = '210' and zo.area_cd = '8' then 'B61168'
+                   when zo.org_id = 'C110900000' then 'A03036'
+                   when zo.org_id = 'C110910000' then 'A03036'
+                   when zo.org_id = 'C110950000' then 'A03036'
+                   when zo.org_id = 'C110940000' then 'B11109'
+                   when zo.org_id = 'C210900000' then 'B21132'
+                   when zo.org_id = 'C310900000' then 'B31132'
+                   when zo.org_id = 'C410900000' then 'B41155'
+                   when zo.org_id = 'C610900000' then 'B61168'
+                   when zo.org_id = 'A109050000' then 'B11109'
+                   when zo.org_id = 'A209050000' then 'B21132'
+                   when zo.org_id = 'A309050000' then 'B31132'
+                   when zo.org_id = 'A409050000' then 'B41155'
+                   when zo.org_id = 'A609050000' then 'B61168'
+                   when zo.org_id = 'Z000530000' then 'B61168'
+                   when zo.org_id = 'Z000280000' then 'B21132'
+                   when zo.org_id = 'Z000410000' then 'B41155'
+                   when zo.org_id = 'Z000480000' then 'B41155'
+                   when zo.org_id = 'Z000640000' then 'B61168'
+                   when zo.org_id = 'Z000690000' then 'B61168'
+                   when zo.org_id = 'B100800000' then 'B11109'
+                   when zo.org_id = 'B200800000' then 'B21132'
+                   when zo.org_id = 'B400800000' then 'B41155'
+                   when zo.org_id = 'B600800000' then 'B61168'
+                   else zo.sup_org_cd
+            end
+            ) as sup_org_cd
+             ,'0000' sup_sub_org_cd
+             ,(case
+                   when zo.org_typ_cd = '210' and zo.area_cd = '1' then '수도권마케팅본부'
+                   when zo.org_typ_cd = '210' and zo.area_cd = '2' then '부산마케팅본부'
+                   when zo.org_typ_cd = '210' and zo.area_cd = '3' then '대구마케팅본부'
+                   when zo.org_typ_cd = '210' and zo.area_cd = '4' then '서부마케팅본부'
+                   when zo.org_typ_cd = '210' and zo.area_cd = '5' then '서부마케팅본부'
+                   when zo.org_typ_cd = '210' and zo.area_cd = '9' then '서부마케팅본부'
+                   when zo.org_typ_cd = '210' and zo.area_cd = '6' then '중부마케팅본부'
+                   when zo.org_typ_cd = '210' and zo.area_cd = '7' then '중부마케팅본부'
+                   when zo.org_typ_cd = '210' and zo.area_cd = '8' then '중부마케팅본부'
+                   when zo.org_id = 'C110900000' then 'Biz마케팅본부'
+                   when zo.org_id = 'C110910000' then 'Biz마케팅본부'
+                   when zo.org_id = 'C110950000' then 'Biz마케팅본부'
+                   when zo.org_id = 'C110940000' then '수도권마케팅본부'
+                   when zo.org_id = 'C210900000' then '부산마케팅본부'
+                   when zo.org_id = 'C310900000' then '대구마케팅본부'
+                   when zo.org_id = 'C410900000' then '서부마케팅본부'
+                   when zo.org_id = 'C610900000' then '중부마케팅본부'
+                   when zo.org_id = 'A109050000' then '수도권마케팅본부'
+                   when zo.org_id = 'A209050000' then '부산마케팅본부'
+                   when zo.org_id = 'A309050000' then '대구마케팅본부'
+                   when zo.org_id = 'A409050000' then '서부마케팅본부'
+                   when zo.org_id = 'A609050000' then '중부마케팅본부'
+                   when zo.org_id = 'Z000530000' then '중부마케팅본부'
+                   when zo.org_id = 'Z000280000' then '부산마케팅본부'
+                   when zo.org_id = 'Z000410000' then '서부마케팅본부'
+                   when zo.org_id = 'Z000480000' then '서부마케팅본부'
+                   when zo.org_id = 'Z000640000' then '중부마케팅본부'
+                   when zo.org_id = 'Z000690000' then '중부마케팅본부'
+                   when zo.org_id = 'B100800000' then '수도권마케팅본부'
+                   when zo.org_id = 'B200800000' then '부산마케팅본부'
+                   when zo.org_id = 'B400800000' then '서부마케팅본부'
+                   when zo.org_id = 'B600800000' then '중부마케팅본부'
+                   else zo.sup_org_nm
+            end
+            ) as sup_org_nm
+             ,zo.org_cl_cd
+             ,zo.org_typ_cd
+             ,zo.warea_cd
+             ,zo.area_cd
+             ,zo.aply_sta_dt
+             ,zo.aply_end_dt
+             ,zo.virtual_org_typ_cd
+             ,null
+             ,zo.as_cntr_typ_cd
+             ,zo.del_yn
+             ,zo.actvn_yn
+             ,zord_stc_org_s.NEXTVAL
+             ,'batch-java'
+             ,sysdate
+             ,zo.co_cl_cd
+             ,zo.ref_org_id
+        from zngm_org zo
+        where zo.org_typ_cd in ('210','201')
+          and zo.org_id in ('B109000000', 'B209000000', 'B309000000', 'B409000000', 'B509000000', 'B609000000', 'B709000000', 'B809000000', 'B909000000',
+                            'C110900000', 'C110910000', 'C110950000', 'C110940000', 'C210900000', 'C310900000', 'C410900000', 'C610900000',
+                            'Z000530000', 'Z000280000', 'Z000410000', 'Z000480000', 'Z000640000', 'Z000690000',
+                            'A109050000', 'A209050000', 'A309050000', 'A409050000', 'A609050000',
+                            'Z000250000', 'Z000260000', 'Z000270000', 'Z000320000', 'Z000330000', 'Z000340000', 'Z000380000', 'Z000390000', 'Z000400000',
+                            'Z000440000', 'Z000450000', 'Z000460000', 'Z000500000', 'Z000510000', 'Z000520000', 'Z000560000', 'Z000570000', 'Z000580000',
+                            'Z000600000', 'Z000610000', 'Z000620000', 'Z000650000', 'Z000660000', 'Z000670000', 'Z000700000', 'Z000710000', 'Z000720000',
+                            'B100800000', 'B200800000', 'B400800000', 'B600800000', 'V990390000', 'V990400000', 'V990410000'
+                           )
+        ]]>
+    </insert>
+
+    <insert id="sts_insert_lvl_0405">
+        <![CDATA[
+        insert into zord_stc_org
+        (
+            org_id
+        , org_lvl
+        , org_nm
+        , org_abbr_nm
+        , org_cd
+        , sub_org_cd
+        , sup_org_id
+        , sup_org_cd
+        , sup_sub_org_cd
+        , sup_org_nm
+        , org_cl_cd
+        , org_typ_cd
+        , warea_cd
+        , area_cd
+        , aply_sta_dt
+        , aply_end_dt
+        , virtual_org_typ_cd
+        , ss_gr_cd
+        , as_cntr_typ_cd
+        , del_yn
+        , actvn_yn
+        , ser_num
+        , audit_id
+        , audit_dtm
+        , co_cl_cd
+        , ref_org_id
+        )
+        select /*+ parallel(zo 4) */ zo.org_id
+             ,case when zo.sub_org_cd = 'A000' then 4 else 5 end org_lvl
+             ,org_nm
+             ,org_abbr_nm
+             ,org_cd
+             ,sub_org_cd
+             ,sup_org_id
+             ,sup_org_cd
+             ,sup_sub_org_cd
+             ,sup_org_nm
+             ,org_cl_cd
+             ,org_typ_cd
+             ,warea_cd
+             ,area_cd
+             ,aply_sta_dt
+             ,aply_end_dt
+             ,virtual_org_typ_cd
+             ,null
+             ,as_cntr_typ_cd
+             ,del_yn
+             ,actvn_yn
+             ,zord_stc_org_s.NEXTVAL
+             ,'batch-java'
+             ,sysdate
+             ,zo.co_cl_cd
+             ,zo.ref_org_id
+        from zngm_org zo
+        where 1 = case when zo.org_typ_cd in ('500','501','510','511','520','521','530','531','540','541') then 1
+                       when zo.org_id in ('V992200000','V992240000') then 1
+                       else 0
+                  end
+          and zo.co_cl_cd = 'T'
+        ]]>
+    </insert>
+
+    <insert id="sts_insert_lvl_06">
+        <![CDATA[
+        insert into zord_stc_org
+        (
+            org_id
+        , org_lvl
+        , org_nm
+        , org_abbr_nm
+        , org_cd
+        , sub_org_cd
+        , sup_org_id
+        , sup_org_cd
+        , sup_sub_org_cd
+        , sup_org_nm
+        , org_cl_cd
+        , org_typ_cd
+        , warea_cd
+        , area_cd
+        , aply_sta_dt
+        , aply_end_dt
+        , virtual_org_typ_cd
+        , ss_gr_cd
+        , as_cntr_typ_cd
+        , del_yn
+        , actvn_yn
+        , ser_num
+        , audit_id
+        , audit_dtm
+        , co_cl_cd
+        , ref_org_id
+        )
+        select /*+ parallel(zo, 4) */ zo.org_id
+             ,6
+             ,zo.org_nm
+             ,zo.org_abbr_nm
+             ,zo.org_cd
+             ,zo.sub_org_cd
+             ,zol.org_id
+             ,zol.org_cd
+             ,zol.sub_org_cd
+             ,zol.org_nm
+             ,zo.org_cl_cd
+             ,zo.org_typ_cd
+             ,zo.warea_cd
+             ,zo.area_cd
+             ,zo.aply_sta_dt
+             ,zo.aply_end_dt
+             ,zo.virtual_org_typ_cd
+             ,null
+             ,zo.as_cntr_typ_cd
+             ,zo.del_yn
+             ,zo.actvn_yn
+             ,zord_stc_org_s.NEXTVAL
+             ,'batch-java'
+             ,sysdate
+             ,zo.co_cl_cd
+             ,zo.ref_org_id
+        from zngm_org zo
+            ,zngm_org zol
+            ,(select /*+ parallel(zor 4)*/ org_id, rel_org_id from zngm_org_rel zor where zor.org_rel_cl_cd = '03' group by org_id, rel_org_id) zor
+        where zo.org_id = zor.org_id
+          and zo.org_typ_cd in ('600','610','620','630','670','680')
+          and zol.org_typ_cd in ('500','510','520','530','540')
+          and zol.org_id = zor.rel_org_id
+          and zo.co_cl_cd = 'T'
+        ]]>
+    </insert>
+
+    <insert id="sts_insert_lvl_etc">
+        <![CDATA[
+        insert into zord_stc_org
+        (
+            org_id
+        , org_lvl
+        , org_nm
+        , org_abbr_nm
+        , org_cd
+        , sub_org_cd
+        , sup_org_id
+        , sup_org_cd
+        , sup_sub_org_cd
+        , sup_org_nm
+        , org_cl_cd
+        , mkt_div_org_id
+        , org_typ_cd
+        , warea_cd
+        , area_cd
+        , aply_sta_dt
+        , aply_end_dt
+        , virtual_org_typ_cd
+        , ss_gr_cd
+        , as_cntr_typ_cd
+        , del_yn
+        , actvn_yn
+        , ser_num
+        , audit_id
+        , audit_dtm
+        , co_cl_cd
+        , ref_org_id
+        )
+        select zo.org_id
+             ,0
+             ,zo.org_nm
+             ,zo.org_abbr_nm
+             ,zo.org_cd
+             ,zo.sub_org_cd
+             ,zo.sup_org_id
+             ,zo.sup_org_cd
+             ,zo.sup_sub_org_cd
+             ,zo.sup_org_nm
+             ,zo.org_cl_cd
+             ,'A000000000' mkt_div_org_id
+             ,zo.org_typ_cd
+             ,zo.warea_cd
+             ,zo.area_cd
+             ,zo.aply_sta_dt
+             ,zo.aply_end_dt
+             ,zo.virtual_org_typ_cd
+             ,null
+             ,zo.as_cntr_typ_cd
+             ,zo.del_yn
+             ,zo.actvn_yn
+             ,zord_stc_org_s.NEXTVAL
+             ,'batch-java'
+             ,sysdate
+             ,zo.co_cl_cd
+             ,zo.ref_org_id
+        from zngm_org zo
+        where zo.org_typ_cd in ('690')
+          and zo.co_cl_cd = 'T'
+        ]]>
+    </insert>
+
+    <insert id="smry_sts_insert">
+        <![CDATA[
+        insert into zord_smry_stc_org_tmp
+        (
+            org_id
+        , lvl_sup_org_id
+        , lvl_ssup_org_id
+        , org_lvl
+        , ser_num
+        , audit_id
+        , audit_dtm
+        )
+        select /*+ full(zso) parallel(zso 4)*/
+              substr(sys_connect_by_path(rpad(zso.org_id,10),':'),2,10) org_id
+             ,zso.org_id lvl_sup_org_id
+             ,zso.sup_org_id lvl_ssup_org_id
+             ,level seq
+             ,to_number(substr(sys_connect_by_path(rpad(zso.ser_num,10),':'),2,10)) ser_num
+             ,'batch-java'
+             ,sysdate
+        from zord_stc_org zso
+        start with org_id in (select /*+ parallel(zsol 4) */ zsol.org_id from zord_stc_org zsol where zsol.org_id <> 'A000000000' and co_cl_cd ='T'
+                            start with zsol.org_id = 'A000000000' connect by prior zsol.org_id = zsol.sup_org_id)
+        connect by prior zso.sup_org_id = zso.org_id
+        ]]>
+    </insert>
+
+</mapper>

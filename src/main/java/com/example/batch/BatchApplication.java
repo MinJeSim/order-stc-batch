@@ -20,13 +20,19 @@ public class BatchApplication implements CommandLineRunner{
 	}
 	@Override
 	public void run(String... args) throws Exception {
+		args = new String[2];
+		args[0] = "ExampleBatchService";
+		args[1] = "1"; // 1 : 생성 , 2 : 삭제
+
 		log.info("CommandLineRunner: " + Arrays.toString(args));
+
 		if( args.length < 1 ){
 			log.info("### check your className : java -jar batch-demo.jar [ClassName]");
 			System.exit(0);
 		}
 		try{
 			String beanName = args[0].substring(0,1).toLowerCase(Locale.ROOT)+args[0].substring(1)+args[1];
+//			beanName = "ExampleBatchService0";
 			System.out.println(beanName);
 			CommonBatch batch = (CommonBatch)BeanUtils.getBean(beanName);
 			batch.doBatch(args);
